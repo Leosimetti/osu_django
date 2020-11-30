@@ -54,15 +54,12 @@ REST_FRAMEWORK = {
 # AUTH_USER_MODEL = "accounts.userProfile"
 
 JWT_AUTH = {
-    # how long the original token is valid for
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 
-    # allow refreshing of tokens
-    'JWT_ALLOW_REFRESH': True,
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 
-    # this is the maximum time AFTER the token was issued that
-    # it can be refreshed.  exprired tokens can't be refreshed.
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
 
 MIDDLEWARE = [

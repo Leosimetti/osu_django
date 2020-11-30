@@ -14,7 +14,7 @@ class userProfile(models.Model):
     map_plays = models.IntegerField(default=0, blank=False)
     total_score = models.IntegerField(default=0, blank=False)
     friends = models.ManyToManyField('self', symmetrical=False, blank=True)
-
+    profile_picture_url = models.URLField(max_length=200, blank=True)
 
     def __str__(self):
         return self.user.username

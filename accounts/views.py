@@ -9,9 +9,28 @@ from .permissions import IsOwnerProfileOrReadOnly
 from .serializers import userProfileSerializer
 
 from rest_framework import filters
+from django.shortcuts import redirect
 
 
-# Create your views here.
+class UserProfileDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = userProfile.objects.all()
+    serializer_class = userProfileSerializer
+    permission_classes = [IsOwnerProfileOrReadOnly, IsAuthenticated]
+
+
+class UserOwnProfile(RetrieveUpdateDestroyAPIView):
+    queryset = userProfile.objects.all()
+    serializer_class = userProfileSerializer
+    permission_classes = [IsAuthenticated, IsOwnerProfileOrReadOnly, ]
+
+    def get_object(self, queryset=None):
+        user = userProfile.objects.get(user=self.request.user)
+        return self.queryset.get(pk=user.id)
+
+    def get(self, request, *args, **kwargs):
+        user = userProfile.objects.get(user=request.user)
+        serializer = userProfileSerializer(user)
+        return JsonResponse(serializer.data, safe=False)
 
 class UserPlay(UpdateAPIView):
     queryset = userProfile.objects.all()
@@ -54,10 +73,8 @@ class UserAddFriend(UpdateAPIView):
         except:
             Exception("Cannot befriend...?")
 
-        try:
-            friend = userProfile.objects.get(user__username=friend_name)
-        except:
-            Exception("No such user?")
+
+        friend = userProfile.objects.get(user__username=friend_name)
         usr = userProfile.objects.get(user=request.user)
         usr.friends.add(friend)
 
@@ -82,8 +99,3 @@ class UserProfileListCreateView(ListCreateAPIView):
         user = self.request.user
         serializer.save(user=user)
 
-
-class UserProfileDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = userProfile.objects.all()
-    serializer_class = userProfileSerializer
-    permission_classes = [IsOwnerProfileOrReadOnly, IsAuthenticated]
