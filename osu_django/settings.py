@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from os import environ
+import os
 import datetime
 
 
@@ -23,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'uq93=tc(mhno$%tyi--)h-k&0e^*j^*hic+@^^5nx5v7hthm@_'
+SECRET_KEY = environ.get('APP_SECRET', 'change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(environ.get('DJANGO_DEBUG', True))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = environ.get('API_ALLOWED_HOSTS').split(';')
 
 
 # Application definition
@@ -146,4 +147,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+static_root = environ.get('API_STATIC_FILES', 'srv/static')
+os.makedirs(static_root, mode=0o755, exist_ok=True)
+STATIC_ROOT = static_root
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'common-static',
+# ]
 STATIC_URL = '/static/'
